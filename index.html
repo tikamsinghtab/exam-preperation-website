@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ExamPrep: Super TET Practice and Mock Tests</title>
+<meta name="description" content="Free practice questions, previous year papers and mock tests for Super TET, CTET, UPTET and other teaching exams.">
+<style>
+  :root {
+    --ink: #1b2430;
+    --paper: #ffffff;
+    --accent: #0f6b5c;
+    --line: #e5e7eb;
+    --muted: #5b6472;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.5;
+  }
+  header {
+    padding: 28px 20px 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  header h1 {
+    margin: 0;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+  }
+  header p {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-size: 15px;
+  }
+  main {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 24px 20px;
+  }
+  h2 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--muted);
+    margin: 0 0 12px;
+  }
+  .exam-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .exam-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px 16px;
+  }
+  .exam-name {
+    font-size: 17px;
+    font-weight: 600;
+  }
+  .exam-sub {
+    font-size: 14px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .status {
+    padding: 8px 0;
+    color: var(--muted);
+    font-size: 15px;
+  }
+  .status.error {
+    color: #9c3b2e;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>ExamPrep</h1>
+  <p>Free practice for competitive and teaching exams.</p>
+</header>
+
+<main>
+  <h2>Select your exam</h2>
+  <div id="examList" class="exam-list">
+    <p class="status">Loading exams...</p>
+  </div>
+</main>
+
+<script>
+  var SUPABASE_URL = "https://rglhkojpdlqquxsabhbv.supabase.co";
+  var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnbGhrb2pwZGxxcXV4c2FiaGJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg1MDc2NTksImV4cCI6MjEwNDA4MzY1OX0.OVBrlOJKMlwYEYaUapGyG-RsZiMVEMvTJ1fux_wqeWI";
+
+  var listEl = document.getElementById("examList");
+
+  fetch(SUPABASE_URL + "/rest/v1/exams?select=id,name,slug&is_active=eq.true&order=name", {
+    headers: {
+      "apikey": SUPABASE_ANON_KEY,
+      "Authorization": "Bearer " + SUPABASE_ANON_KEY
+    }
+  })
+    .then(function(res) {
+      if (!res.ok) { throw new Error("Request failed: " + res.status); }
+      return res.json();
+    })
+    .then(function(exams) {
+      if (exams.length === 0) {
+        listEl.innerHTML = "<p class=\"status\">No exams added yet.</p>";
+        return;
+      }
+      var html = "";
+      for (var i = 0; i < exams.length; i++) {
+        html += "<div class=\"exam-card\">";
+        html += "<div class=\"exam-name\">" + exams[i].name + "</div>";
+        html += "<div class=\"exam-sub\">Practice questions and mock tests</div>";
+        html += "</div>";
+      }
+      listEl.innerHTML = html;
+    })
+    .catch(function(err) {
+      listEl.innerHTML = "<p class=\"status error\">Could not load exams. Please check your internet and try again.</p>";
+      console.error(err);
+    });
+</script>
+
+</body>
+</html>
